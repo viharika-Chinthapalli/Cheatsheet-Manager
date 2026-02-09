@@ -5,10 +5,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview",
-    "sync-json": "node scripts/sync-json.js",
-    "watch-json": "node scripts/watch-json.js",
-    "postbuild": "npm run sync-json"
+    "preview": "vite preview"
   },
   "dependencies": {
     "react": "^18.2.0",

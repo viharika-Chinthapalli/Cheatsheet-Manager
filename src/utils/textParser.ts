@@ -52,7 +52,6 @@ export function parseCheatsheetText(text: string): ParseResult {
   let courseCounter = 0;
   let moduleCounter = 0;
   let unitCounter = 0;
-  let inSection = false;
   let isMarkdownFormat = false;
 
   // Patterns to match
@@ -81,13 +80,11 @@ export function parseCheatsheetText(text: string): ParseResult {
 
     // Check for Section tags (markdown format indicator)
     if (sectionStartPattern.test(line)) {
-      inSection = true;
       isMarkdownFormat = true;
       // If no course exists, create a default course
       if (!currentCourse) {
         courseCounter++;
         currentCourse = {
-          id: `course-${courseCounter}`,
           name: 'Default Course',
           modules: [],
         };
@@ -96,7 +93,6 @@ export function parseCheatsheetText(text: string): ParseResult {
       if (!currentModule) {
         moduleCounter++;
         currentModule = {
-          id: `module-${moduleCounter}`,
           name: 'Default Module',
           units: [],
         };
@@ -108,7 +104,6 @@ export function parseCheatsheetText(text: string): ParseResult {
     }
 
     if (sectionEndPattern.test(line)) {
-      inSection = false;
       continue;
     }
 
@@ -131,7 +126,6 @@ export function parseCheatsheetText(text: string): ParseResult {
         // Start new unit from ## header
         unitCounter++;
         currentUnit = {
-          id: `unit-${unitCounter}`,
           name: header2Match[1].trim(),
           cheatsheet: '',
         };
@@ -140,7 +134,6 @@ export function parseCheatsheetText(text: string): ParseResult {
         if (!currentCourse) {
           courseCounter++;
           currentCourse = {
-            id: `course-${courseCounter}`,
             name: 'Default Course',
             modules: [],
           };
@@ -148,11 +141,12 @@ export function parseCheatsheetText(text: string): ParseResult {
         if (!currentModule) {
           moduleCounter++;
           currentModule = {
-            id: `module-${moduleCounter}`,
             name: 'Default Module',
             units: [],
           };
-          currentCourse.modules.push(currentModule);
+          if (currentCourse) {
+            currentCourse.modules.push(currentModule);
+          }
         }
         continue;
       }
@@ -188,7 +182,6 @@ export function parseCheatsheetText(text: string): ParseResult {
       // Start new course
       courseCounter++;
       currentCourse = {
-        id: `course-${courseCounter}`,
         name: courseMatch[1].trim(),
         modules: [],
       };
@@ -213,7 +206,6 @@ export function parseCheatsheetText(text: string): ParseResult {
       // Start new module
       moduleCounter++;
       currentModule = {
-        id: `module-${moduleCounter}`,
         name: moduleMatch[2].trim(),
         units: [],
       };
@@ -233,7 +225,6 @@ export function parseCheatsheetText(text: string): ParseResult {
       // Start new unit
       unitCounter++;
       currentUnit = {
-        id: `unit-${unitCounter}`,
         name: unitMatch[2].trim(),
         cheatsheet: '',
       };
@@ -248,7 +239,6 @@ export function parseCheatsheetText(text: string): ParseResult {
       // We'll create a default unit for it
       unitCounter++;
       currentUnit = {
-        id: `unit-${unitCounter}`,
         name: 'Default Unit',
         cheatsheet: '',
       };
@@ -258,14 +248,12 @@ export function parseCheatsheetText(text: string): ParseResult {
       if (!currentUnit) {
         unitCounter++;
         currentUnit = {
-          id: `unit-${unitCounter}`,
           name: 'Introduction',
           cheatsheet: '',
         };
         if (!currentModule) {
           moduleCounter++;
           currentModule = {
-            id: `module-${moduleCounter}`,
             name: 'Default Module',
             units: [],
           };
@@ -273,7 +261,6 @@ export function parseCheatsheetText(text: string): ParseResult {
         if (!currentCourse) {
           courseCounter++;
           currentCourse = {
-            id: `course-${courseCounter}`,
             name: 'Default Course',
             modules: [],
           };
