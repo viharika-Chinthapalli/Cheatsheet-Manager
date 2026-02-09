@@ -19,6 +19,12 @@ export async function saveCheatsheetData(data: CheatsheetData): Promise<void> {
     // Try to save directly via API (works when dev server is running)
     await autoExportToFile(data);
   } catch (error) {
+    // If API endpoint is not available (404 in production), fall back to download
+    if (error instanceof Error && error.message.includes('API endpoint not available')) {
+      console.log('📥 API endpoint not available, downloading file instead...');
+      exportToFile(data);
+      return;
+    }
     console.error('Error saving data:', error);
     throw new Error('Failed to save data.');
   }
@@ -48,13 +54,26 @@ async function autoExportToFile(data: CheatsheetData): Promise<void> {
       await response.json();
       console.log('✅ Cheatsheets saved directly to public/data/cheatsheets.json');
       return;
+    } else if (response.status === 404) {
+      // API endpoint not available (production scenario)
+      throw new Error('API endpoint not available');
     } else {
-      const error = await response.json();
-      throw new Error(error.message || 'Failed to save file');
+      // Try to parse error response, but handle case where it might be HTML
+      try {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to save file');
+      } catch (parseError) {
+        // Response might be HTML (404 page), not JSON
+        throw new Error('API endpoint not available');
+      }
     }
   } catch (error) {
-    console.error('❌ Failed to save cheatsheets:', error);
-    throw new Error('Failed to save cheatsheets. Make sure the dev server is running (npm run dev).');
+    // If it's a network error or 404, indicate API is not available
+    if (error instanceof TypeError || (error instanceof Error && error.message.includes('API endpoint not available'))) {
+      throw new Error('API endpoint not available');
+    }
+    // Re-throw other errors
+    throw error;
   }
 }
 
