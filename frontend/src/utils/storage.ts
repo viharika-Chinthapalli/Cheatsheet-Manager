@@ -7,8 +7,13 @@
 import { CheatsheetData } from '../types';
 
 /** Backend base URL; empty string = same origin (use with Vite proxy or same host). */
+const DEFAULT_API_URL = 'https://cheatsheet-manager.onrender.com';
+
 function getApiBase(): string {
-  return (import.meta.env.VITE_API_URL as string) ?? '';
+  const url = (import.meta.env.VITE_API_URL as string)?.trim() ?? '';
+  // In production build, if no env URL is set, use deployed backend so static hosts don't 404
+  if (import.meta.env.PROD && !url) return DEFAULT_API_URL;
+  return url;
 }
 
 const API_CHEATSHEETS = `${getApiBase()}/api/cheatsheets`;
