@@ -10,7 +10,6 @@ import { CourseSelector } from './CourseSelector';
 import { ModuleSelector } from './ModuleSelector';
 import { UnitSelector } from './UnitSelector';
 import { CheatsheetViewer } from './CheatsheetViewer';
-import { PromptTemplates } from './PromptTemplates';
 
 interface ViewCheatsheetsPageProps {
   onNavigateToAdd: () => void;
@@ -136,7 +135,6 @@ export function ViewCheatsheetsPage({ onNavigateToAdd, onDataUpdated }: ViewChea
 
       <div className="app-content">
         <CheatsheetViewer content={combinedContent} unitCount={unitCount} />
-        <PromptTemplates cheatsheetContent={combinedContent} />
       </div>
     </div>
   );
