@@ -18,7 +18,8 @@ interface TextInputProps {
  */
 export function TextInput({ onDataLoaded }: TextInputProps) {
   const [error, setError] = useState<string | null>(null);
-  
+  const [isLoading, setIsLoading] = useState(false);
+
   // Manual entry fields
   const [courseName, setCourseName] = useState('');
   const [moduleName, setModuleName] = useState('');
@@ -60,79 +61,73 @@ export function TextInput({ onDataLoaded }: TextInputProps) {
         return;
       }
 
-      const unitsCount = manualUnits.length;
-
-      // Build structured data from manual entries
-      const coursesMap = new Map<string, {
-        name: string;
-        modules: Map<string, {
-          name: string;
-          units: Array<{
-            name: string;
-            cheatsheet: string;
-          }>;
-        }>;
-      }>();
-
-      manualUnits.forEach((unit) => {
-        // Get or create course
-        if (!coursesMap.has(unit.courseName)) {
-          coursesMap.set(unit.courseName, {
-            name: unit.courseName,
-            modules: new Map(),
-          });
-        }
-        const course = coursesMap.get(unit.courseName)!;
-
-        // Get or create module
-        if (!course.modules.has(unit.moduleName)) {
-          course.modules.set(unit.moduleName, {
-            name: unit.moduleName,
-            units: [],
-          });
-        }
-        const module = course.modules.get(unit.moduleName)!;
-
-        // Add unit (append to existing units in this module)
-        module.units.push({
-          name: unit.unitName,
-          cheatsheet: unit.content,
-        });
-      });
-
-      // Convert to CheatsheetData format (without IDs)
-      const newData: CheatsheetData = {
-        courses: Array.from(coursesMap.values()).map((course) => ({
-          name: course.name,
-          modules: Array.from(course.modules.values()).map((module) => ({
-            name: module.name,
-            units: module.units,
-          })),
-        })),
-      };
-
-      // Load existing data from file
-      const existingData = await loadCheatsheetData();
-      
-      // Merge with existing data (appends new units to existing courses/modules)
-      const mergedData = mergeCheatsheetData(existingData || { courses: [] }, newData);
-      
-      // Save merged data directly to file (exports JSON)
-      await saveCheatsheetData(mergedData);
-      
-      // Clear the form
-      setManualUnits([]);
-      setCourseName('');
-      setModuleName('');
-      setUnitName('');
-      setText('');
+      setIsLoading(true);
       setError(null);
-      
-      // Show success message
-      alert(`✅ ${unitsCount} unit(s) added successfully!\n\n📁 Cheatsheets saved to backend.\n\n💡 You can add more units to any module anytime - they will be automatically appended!`);
-      
-      // Notify parent
-      onDataLoaded(mergedData);
+
+      try {
+        const unitsCount = manualUnits.length;
+
+        // Build structured data from manual entries
+        const coursesMap = new Map<string, {
+          name: string;
+          modules: Map<string, {
+            name: string;
+            units: Array<{
+              name: string;
+              cheatsheet: string;
+            }>;
+          }>;
+        }>();
+
+        manualUnits.forEach((unit) => {
+          if (!coursesMap.has(unit.courseName)) {
+            coursesMap.set(unit.courseName, {
+              name: unit.courseName,
+              modules: new Map(),
+            });
+          }
+          const course = coursesMap.get(unit.courseName)!;
+          if (!course.modules.has(unit.moduleName)) {
+            course.modules.set(unit.moduleName, {
+              name: unit.moduleName,
+              units: [],
+            });
+          }
+          const module = course.modules.get(unit.moduleName)!;
+          module.units.push({
+            name: unit.unitName,
+            cheatsheet: unit.content,
+          });
+        });
+
+        const newData: CheatsheetData = {
+          courses: Array.from(coursesMap.values()).map((course) => ({
+            name: course.name,
+            modules: Array.from(course.modules.values()).map((module) => ({
+              name: module.name,
+              units: module.units,
+            })),
+          })),
+        };
+
+        const existingData = await loadCheatsheetData();
+        const mergedData = mergeCheatsheetData(existingData || { courses: [] }, newData);
+        await saveCheatsheetData(mergedData);
+
+        setManualUnits([]);
+        setCourseName('');
+        setModuleName('');
+        setUnitName('');
+        setText('');
+        setError(null);
+        alert(`✅ ${unitsCount} unit(s) added successfully!\n\n📁 Cheatsheets saved to backend.\n\n💡 You can add more units to any module anytime - they will be automatically appended!`);
+        onDataLoaded(mergedData);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'Failed to load or save cheatsheets. Check your connection and try again.';
+        setError(message);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
   const handleClearManual = () => {
@@ -228,6 +223,12 @@ export function TextInput({ onDataLoaded }: TextInputProps) {
         />
       </div>
 
+      {isLoading && (
+        <div className="text-input-loading" role="status" aria-live="polite">
+          Saving to backend…
+        </div>
+      )}
+
       {error && (
         <div className="text-input-error">
           <strong>Error:</strong> {error}
@@ -241,8 +242,13 @@ export function TextInput({ onDataLoaded }: TextInputProps) {
         <button onClick={handleAddUnit} className="text-input-button secondary">
           Add Unit
         </button>
-        <button onClick={handleLoadManual} className="text-input-button primary">
-          Load ({manualUnits.length} units)
+        <button
+          onClick={handleLoadManual}
+          className="text-input-button primary"
+          disabled={isLoading}
+          aria-busy={isLoading}
+        >
+          {isLoading ? 'Loading…' : `Load (${manualUnits.length} units)`}
         </button>
       </div>
     </div>
