@@ -27,3 +27,19 @@ Build a frontend-only web application for generating exam content from cheatshee
 ### Discovered During Work
 _(Add any new requirements or issues discovered during development)_
 
+---
+
+## 2025-02-11 - Backend: MongoDB + Express + .env
+
+### Main Task
+Switch backend from file-based storage to MongoDB; use Express and `.env` for easy deployment.
+
+**Status**: Completed ✅
+
+### Subtasks
+- [x] Add mongoose and dotenv to backend
+- [x] Create Mongoose model (Course → Module → Unit → Cheatsheet)
+- [x] Replace file I/O with MongoDB in index.js
+- [x] Add .env.example (PORT, MONGODB_URI) and document .env usage
+- [x] Update PLANNING.md and README
+

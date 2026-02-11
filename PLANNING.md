@@ -80,11 +80,17 @@ When a unit is selected:
 4. User selects Unit → Triggers cheatsheet collection
 5. Combined cheatsheet displayed → Available for prompt generation
 
+## Backend (Optional)
+- **Stack**: Node.js, Express, MongoDB (Mongoose)
+- **Config**: Environment variables via `.env` (see `backend/.env.example`)
+- **API**: `GET /api/cheatsheets`, `POST /api/cheatsheets` — same payload shape as the JSON file (`{ courses: [...] }`)
+- **Deployment**: Set `PORT` and `MONGODB_URI` in env; run `npm start` in `backend/`
+
 ## Constraints
-- Frontend only (no backend, no database, no APIs)
-- Data stored in single local JSON file
+- Frontend can run with local JSON or backend API
 - No authentication required
-- Cheatsheets are editable via the JSON file
+- Cheatsheets are editable via the JSON file or API
+
 
 
 

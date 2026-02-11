@@ -115,10 +115,59 @@ Use the prompt templates to generate prompts for AI tools (like ChatGPT):
 
 The prompts are automatically copied to your clipboard and can be pasted into your preferred AI tool.
 
+## Backend (MongoDB + Express)
+
+The backend stores cheatsheets in **MongoDB** and is configured via a **`.env`** file for easy deployment.
+
+### Backend setup
+
+1. Go to the backend folder and install dependencies:
+
+```bash
+cd backend
+npm install
+```
+
+2. Create a `.env` file (copy from `.env.example`):
+
+```bash
+cp .env.example .env
+```
+
+3. Edit `.env` and set:
+
+- **`MONGODB_URI`** (required): MongoDB connection string  
+  - Local: `mongodb://localhost:27017/cheatsheet-manager`  
+  - [MongoDB Atlas](https://www.mongodb.com/atlas): `mongodb+srv://USER:PASSWORD@cluster.mongodb.net/cheatsheet-manager`
+- **`PORT`** (optional): Server port; default `4000`
+
+4. Start the backend:
+
+```bash
+npm start
+```
+
+The API runs at `http://localhost:4000` (or your `PORT`). Endpoints:
+
+- `GET /api/cheatsheets` — returns `{ courses: [...] }`
+- `POST /api/cheatsheets` — body: `{ courses: [...] }` (replaces stored data)
+
+### Deployment
+
+Set `PORT` and `MONGODB_URI` in your host’s environment (or `.env`), then run `npm start` in `backend/`. No file storage required; MongoDB holds all data.
+
 ## Project Structure
 
 ```
 /
+├── backend/
+│   ├── .env.example                  # Env template (copy to .env)
+│   ├── db.js                         # MongoDB connection
+│   ├── index.js                      # Express server
+│   ├── models/
+│   │   └── Cheatsheets.js            # Mongoose model
+│   └── package.json
+├── frontend/
 ├── public/
 │   └── data/
 │       └── cheatsheets.json          # Example data file
