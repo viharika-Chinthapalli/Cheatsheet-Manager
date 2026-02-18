@@ -155,4 +155,37 @@ export function getUnitsUpToSelected(
   return foundSelectedUnit ? units : [];
 }
 
+/**
+ * Returns only the cheatsheet for the selected unit (no cumulative content).
+ *
+ * Args:
+ *   data: The complete cheatsheet data structure.
+ *   courseName: Name of the selected course.
+ *   moduleName: Name of the selected module.
+ *   unitName: Name of the selected unit.
+ *
+ * Returns:
+ *   The selected unit's cheatsheet text, or empty string if not found.
+ */
+export function getSingleUnitCheatsheet(
+  data: CheatsheetData,
+  courseName: string,
+  moduleName: string,
+  unitName: string
+): string {
+  const course = data.courses.find((c) => c.name === courseName);
+  if (!course) {
+    return '';
+  }
 
+  for (const module of course.modules) {
+    if (module.name !== moduleName) continue;
+    const unit = module.units.find((u) => u.name === unitName);
+    if (unit) {
+      return unit.cheatsheet;
+    }
+    break;
+  }
+
+  return '';
+}

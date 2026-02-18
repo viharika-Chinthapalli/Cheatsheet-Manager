@@ -69,6 +69,37 @@ body {
   gap: 1.5rem;
 }
 
+.view-mode-selector {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.view-mode-selector label:first-child {
+  font-weight: 500;
+  color: #333;
+}
+
+.view-mode-options {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.view-mode-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-weight: 400;
+}
+
+.view-mode-option input {
+  cursor: pointer;
+}
+
 .app-content {
   display: flex;
   flex-direction: column;

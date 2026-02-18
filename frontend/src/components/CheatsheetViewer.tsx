@@ -5,6 +5,8 @@
 interface CheatsheetViewerProps {
   content: string;
   unitCount: number;
+  /** When 'only-this-unit', header shows single-unit label. */
+  viewMode?: 'up-to-unit' | 'only-this-unit';
 }
 
 /**
@@ -14,11 +16,11 @@ interface CheatsheetViewerProps {
  *   content: The combined cheatsheet content to display.
  *   unitCount: Number of units included in the content.
  */
-export function CheatsheetViewer({ content, unitCount }: CheatsheetViewerProps) {
+export function CheatsheetViewer({ content, unitCount, viewMode }: CheatsheetViewerProps) {
   if (!content) {
     return (
       <div className="cheatsheet-viewer empty">
-        <p>Select a course, module, and unit to view combined cheatsheets.</p>
+        <p>Select a course, module, and unit to view cheatsheets.</p>
       </div>
     );
   }
@@ -29,10 +31,13 @@ export function CheatsheetViewer({ content, unitCount }: CheatsheetViewerProps) 
     });
   };
 
+  const headerTitle =
+    viewMode === 'only-this-unit' ? 'This Unit\'s Cheatsheet' : 'Combined Cheatsheet Content';
+
   return (
     <div className="cheatsheet-viewer">
       <div className="cheatsheet-viewer-header">
-        <h3>Combined Cheatsheet Content</h3>
+        <h3>{headerTitle}</h3>
         <div className="cheatsheet-viewer-meta">
           <span className="unit-count">{unitCount} unit(s) included</span>
           <button onClick={handleCopy} className="copy-button">

@@ -4,7 +4,11 @@
 
 import { useState, useEffect } from 'react';
 import { CheatsheetData, SelectionState } from '../types';
-import { collectCheatsheetsUpToUnit, getUnitsUpToSelected } from '../utils/cheatsheetCollector';
+import {
+  collectCheatsheetsUpToUnit,
+  getUnitsUpToSelected,
+  getSingleUnitCheatsheet,
+} from '../utils/cheatsheetCollector';
 import { loadCheatsheetData } from '../utils/storage';
 import { CourseSelector } from './CourseSelector';
 import { ModuleSelector } from './ModuleSelector';
@@ -30,6 +34,8 @@ export function ViewCheatsheetsPage({ onNavigateToAdd, onDataUpdated }: ViewChea
     moduleName: null,
     unitName: null,
   });
+  /** 'up-to-unit' = all cheatsheets from top to selected unit; 'only-this-unit' = just the selected unit */
+  const [viewMode, setViewMode] = useState<'up-to-unit' | 'only-this-unit'>('up-to-unit');
 
   useEffect(() => {
     // Load data from storage on mount
@@ -65,23 +71,33 @@ export function ViewCheatsheetsPage({ onNavigateToAdd, onDataUpdated }: ViewChea
   const currentModule = currentCourse?.modules.find((m) => m.name === selection.moduleName);
   const availableUnits = currentModule?.units || [];
 
-  // Get combined cheatsheet content
+  // Get cheatsheet content based on view mode
   let combinedContent = '';
   let unitCount = 0;
   if (data && selection.courseName && selection.moduleName && selection.unitName) {
-    combinedContent = collectCheatsheetsUpToUnit(
-      data,
-      selection.courseName,
-      selection.moduleName,
-      selection.unitName
-    );
-    const units = getUnitsUpToSelected(
-      data,
-      selection.courseName,
-      selection.moduleName,
-      selection.unitName
-    );
-    unitCount = units.length;
+    if (viewMode === 'only-this-unit') {
+      combinedContent = getSingleUnitCheatsheet(
+        data,
+        selection.courseName,
+        selection.moduleName,
+        selection.unitName
+      );
+      unitCount = combinedContent ? 1 : 0;
+    } else {
+      combinedContent = collectCheatsheetsUpToUnit(
+        data,
+        selection.courseName,
+        selection.moduleName,
+        selection.unitName
+      );
+      const units = getUnitsUpToSelected(
+        data,
+        selection.courseName,
+        selection.moduleName,
+        selection.unitName
+      );
+      unitCount = units.length;
+    }
   }
 
   if (!data || data.courses.length === 0) {
@@ -133,8 +149,40 @@ export function ViewCheatsheetsPage({ onNavigateToAdd, onDataUpdated }: ViewChea
         />
       </div>
 
+      {selection.courseName && selection.moduleName && selection.unitName && (
+        <div className="view-mode-selector">
+          <label>Show cheatsheet:</label>
+          <div className="view-mode-options">
+            <label className="view-mode-option">
+              <input
+                type="radio"
+                name="viewMode"
+                value="up-to-unit"
+                checked={viewMode === 'up-to-unit'}
+                onChange={() => setViewMode('up-to-unit')}
+              />
+              <span>All from start up to this unit</span>
+            </label>
+            <label className="view-mode-option">
+              <input
+                type="radio"
+                name="viewMode"
+                value="only-this-unit"
+                checked={viewMode === 'only-this-unit'}
+                onChange={() => setViewMode('only-this-unit')}
+              />
+              <span>Only this unit</span>
+            </label>
+          </div>
+        </div>
+      )}
+
       <div className="app-content">
-        <CheatsheetViewer content={combinedContent} unitCount={unitCount} />
+        <CheatsheetViewer
+          content={combinedContent}
+          unitCount={unitCount}
+          viewMode={viewMode}
+        />
       </div>
     </div>
   );

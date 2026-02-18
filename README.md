@@ -94,16 +94,14 @@ Cheatsheet content for CSS unit 2 part 2.
 2. **Select a Module**: Choose a module within the selected course
 3. **Select a Unit**: Choose a unit within the selected module
 
-### 4. View Combined Cheatsheets
+### 4. View Cheatsheets
 
-Once a unit is selected, the application automatically:
-- Collects all cheatsheets from the beginning of the course
-- Includes all previous modules
-- Includes all previous units in the same module
-- Includes the selected unit itself
-- Displays the combined content
+Once a unit is selected, you can choose how to view cheatsheets:
 
-You can copy the combined cheatsheet content to your clipboard using the "Copy to Clipboard" button.
+- **All from start up to this unit**: Collects all cheatsheets from the beginning of the course through the selected unit (all previous modules, previous units in the same module, and the selected unit). Use this for cumulative exam content.
+- **Only this unit**: Shows only the selected unit’s cheatsheet. Use this when you need content for a single unit.
+
+You can copy the displayed content to your clipboard using the "Copy to Clipboard" button.
 
 ### 5. Generate Question Prompts
 

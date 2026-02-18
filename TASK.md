@@ -29,6 +29,22 @@ _(Add any new requirements or issues discovered during development)_
 
 ---
 
+## 2025-02-18 - View modes: up-to-unit and only-this-unit
+
+### Main Task
+Add two cheatsheet view options: (1) all cheatsheets from top to specified unit, (2) only the selected unit's cheatsheet.
+
+**Status**: Completed ✅
+
+### Subtasks
+- [x] Add `getSingleUnitCheatsheet` in cheatsheetCollector.ts
+- [x] Add view mode selector (radio) in View Cheatsheets page
+- [x] Wire "All from start up to this unit" and "Only this unit" to content display
+- [x] Style view-mode-selector in index.css
+- [x] Update CheatsheetViewer header based on mode
+
+---
+
 ## 2025-02-11 - Backend: MongoDB + Express + .env
 
 ### Main Task
